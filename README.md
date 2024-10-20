@@ -78,6 +78,5 @@ int main() {
     return MASK ^ MASK;
 }
 ```
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Uncial+Antiqua&size=23&letterSpacing=.2rem&duration=6000&pause=1506&color=3B2C20&background=E3D8B8&center=true&vCenter=true&multiline=true&width=501&height=200&lines=Non+est+ad+astra+mollis+e+terris+via.;Multa+enim+mala+patimur%2C;Sed+magno+animo+ferenda+sunt.)](https://git.io/typing-svg)
 
 [![GitHub Streak](https://github-readme-streak-stats.herokuapp.com?user=rkntan&theme=calm&hide_border=true)](https://git.io/streak-stats)
