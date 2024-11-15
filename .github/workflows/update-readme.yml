@@ -24,9 +24,17 @@ jobs:
       with:
         node-version: '20'  # Specify the Node.js version to use
 
-    # Install dependencies (if using any libraries)
+  # Create package.json if it doesn't exist
+    - name: Ensure package.json exists
+      run: |
+        if [ ! -f package.json ]; then
+          echo '{}' > package.json
+          npm init -y
+        fi
+
+    # Install dependencies (if any are listed in package.json)
     - name: Install dependencies
-      run: npm install  # if you have any dependencies in package.json
+      run: npm install
 
     # Run the script to update the README
     - name: Update README
