@@ -2,8 +2,8 @@ name: Update README
 
 on:
   schedule:
-    # Run once a day at midnight UTC
-    - cron: '0 0 * * *'  # Runs once per day at midnight UTC
+    # Run once every hour
+    - cron: '0 * * * *'  # Runs every hour at minute 0
   push:
     # Trigger the workflow when changes are pushed to the main branch
     branches:
