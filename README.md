@@ -1,3 +1,3 @@
 # welcome
 
-![Card](./card.svg)
+![Card](./card.svg?)
