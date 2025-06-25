@@ -1,7 +1,38 @@
 const fs = require('fs');
+const https = require('https');
+const path = require('path');
+
+// Function to convert image to base64
+function imageToBase64(imagePath) {
+  try {
+    const imageBuffer = fs.readFileSync(imagePath);
+    const base64String = imageBuffer.toString('base64');
+    return `data:image/jpeg;base64,${base64String}`;
+  } catch (error) {
+    console.error('Error converting image to base64:', error.message);
+    return null;
+  }
+}
+
+// Function to download image from URL
+function downloadImage(url, filename) {
+  return new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(filename);
+    https.get(url, (response) => {
+      response.pipe(file);
+      file.on('finish', () => {
+        file.close();
+        resolve(filename);
+      });
+    }).on('error', (err) => {
+      fs.unlink(filename, () => { }); // Delete the file on error
+      reject(err);
+    });
+  });
+}
 
 // Function to get current movie frame from a counter file
-function getCurrentMovieFrame() {
+async function getCurrentMovieFrame() {
   const counterFile = 'frame-counter.txt';
   let frameNumber = 1;
 
@@ -22,13 +53,33 @@ function getCurrentMovieFrame() {
     frameNumber = 1;
   }
 
+  // Download the current frame image
+  const imageUrl = `https://res.cloudinary.com/dhfdso9tc/image/upload/v1541253320/Godfather/Godfather_${frameNumber}.jpg`;
+  const localImagePath = `current-frame.jpg`;
+  let base64Image = null;
+
+  try {
+    await downloadImage(imageUrl, localImagePath);
+    console.log(`Downloaded frame ${frameNumber} to ${localImagePath}`);
+
+    // Convert to base64 for embedding in SVG
+    base64Image = imageToBase64(localImagePath);
+    if (base64Image) {
+      console.log(`Converted frame ${frameNumber} to base64`);
+    }
+  } catch (error) {
+    console.error(`Failed to download frame ${frameNumber}:`, error.message);
+  }
+
   // Save next frame number for next run
   fs.writeFileSync(counterFile, (frameNumber + 1).toString(), 'utf8');
 
   return {
     frameNumber,
     totalFrames,
-    imageUrl: `https://res.cloudinary.com/dhfdso9tc/image/upload/v1541253320/Godfather/Godfather_${frameNumber}.jpg`
+    imageUrl,
+    localImagePath,
+    base64Image
   };
 }
 
@@ -47,9 +98,9 @@ function generateMovieFrame(movieFrame) {
   expectedFinishDate.setDate(expectedFinishDate.getDate() + remainingDays);
 
   const svgTemplate = `
-<svg viewBox="0 0 800 460" width="800" height="460" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 800 460" width="800" height="460" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <!-- Movie frame background -->
-  <image href="${movieFrame.imageUrl}" x="0" y="0" width="800" height="460" preserveAspectRatio="xMidYMid slice"/>
+  <image xlink:href="${movieFrame.base64Image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQ2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkZyYW1lIE5vdCBBdmFpbGFibGU8L3RleHQ+PC9zdmc+'}" x="0" y="0" width="800" height="460" preserveAspectRatio="xMidYMid slice"/>
   
   <!-- Main overlay for movie info -->
   <rect x="0" y="360" width="800" height="100" fill="#000" opacity="0.85"/>
@@ -94,13 +145,19 @@ function saveSVGToFile(svgContent, filename) {
 }
 
 // Get current movie frame and generate SVG
-const movieFrame = getCurrentMovieFrame();
-const svgContent = generateMovieFrame(movieFrame);
+async function main() {
+  const movieFrame = await getCurrentMovieFrame();
+  const svgContent = generateMovieFrame(movieFrame);
 
-// Save the SVG file
-const svgFilename = 'card.svg';
-saveSVGToFile(svgContent, svgFilename);
+  // Save the SVG file
+  const svgFilename = 'card.svg';
+  saveSVGToFile(svgContent, svgFilename);
 
-// Log movie progress info
-console.log(`Current frame: ${movieFrame.frameNumber}/${movieFrame.totalFrames} (${Math.round((movieFrame.frameNumber / movieFrame.totalFrames) * 100)}%)`);
-console.log(`Frame URL: ${movieFrame.imageUrl}`);
+  // Log movie progress info
+  console.log(`Current frame: ${movieFrame.frameNumber}/${movieFrame.totalFrames} (${Math.round((movieFrame.frameNumber / movieFrame.totalFrames) * 100)}%)`);
+  console.log(`Frame URL: ${movieFrame.imageUrl}`);
+  console.log(`Local image: ${movieFrame.localImagePath}`);
+}
+
+// Run the main function
+main().catch(console.error);
