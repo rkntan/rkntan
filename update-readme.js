@@ -86,7 +86,7 @@ async function getCurrentMovieFrame() {
 // Function to generate simple SVG with movie frame
 function generateMovieFrame(movieFrame) {
   // Calculate expected finish date (9773 days from start)
-  const startDate = new Date('2024-01-01'); // Assuming we started Jan 1, 2024
+  const startDate = new Date('2024-06-25');
   const finishDate = new Date(startDate);
   finishDate.setDate(finishDate.getDate() + 9773);
 
@@ -132,6 +132,7 @@ function generateMovieFrame(movieFrame) {
     Frames from everysingleframe.com
   </text>
   
+  <!-- Author: ErkanTan - https://github.com/rkntan -->
 </svg>
 `;
 
