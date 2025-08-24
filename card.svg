@@ -13,12 +13,12 @@
   
   <!-- Frame info -->
   <text x="20" y="405" font-family="Arial, sans-serif" font-size="14" fill="#ccc">
-    Frame 1429 of 9773 (15%)
+    Frame 1430 of 9773 (15%)
   </text>
   
   <!-- Progress bar -->
   <rect x="20" y="415" width="760" height="6" fill="#333" rx="3"/>
-  <rect x="20" y="415" width="111.12657321191037" height="6" fill="#fff" rx="3"/>
+  <rect x="20" y="415" width="111.2043384835772" height="6" fill="#fff" rx="3"/>
   
   <!-- Cool explanation text -->
   <text x="20" y="435" font-family="Arial, sans-serif" font-size="11" fill="#aaa">
@@ -26,7 +26,7 @@
   </text>
   
   <text x="20" y="450" font-family="Arial, sans-serif" font-size="11" fill="#aaa">
-    📅 Expected completion: Aug 7, 2026 | 8344 frames remaining | ~348 days left
+    📅 Expected completion: Aug 7, 2026 | 8343 frames remaining | ~348 days left
   </text>
   
   <text x="600" y="435" font-family="Arial, sans-serif" font-size="10" fill="#888">
